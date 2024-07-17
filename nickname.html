@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>웃긴 별명 생성기</title>
+  <style>
+    body {
+      font-family: 'Comic Sans MS', sans-serif;
+      background-color: #ffeb3b;
+      text-align: center;
+      padding: 50px;
+    }
+    h1 {
+      color: #d32f2f;
+    }
+    label {
+      font-size: 1.2em;
+    }
+    input, button {
+      font-size: 1.2em;
+      padding: 10px;
+      margin: 10px;
+    }
+    .nickname {
+      font-size: 1.5em;
+      color: #4caf50;
+      margin-top: 20px;
+    }
+  </style>
+</head>
+<body>
+  <h1>웃긴 별명 생성기 🤪</h1>
+  <form id="nicknameForm">
+    <label for="name">이름:</label>
+    <input type="text" id="name" name="name" required><br>
+    <label for="keyword1">키워드 1:</label>
+    <input type="text" id="keyword1" name="keyword1" required><br>
+    <label for="keyword2">키워드 2:</label>
+    <input type="text" id="keyword2" name="keyword2" required><br>
+    <label for="keyword3">키워드 3:</label>
+    <input type="text" id="keyword3" name="keyword3" required><br>
+    <label for="keyword4">키워드 4:</label>
+    <input type="text" id="keyword4" name="keyword4" required><br>
+    <button type="submit">별명 생성하기!</button>
+  </form>
+  <div class="nickname" id="nicknameResult"></div>
+
+  <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+  <script>
+    document.getElementById('nicknameForm').addEventListener('submit', async function(event) {
+      event.preventDefault();
+
+      const name = document.getElementById('name').value;
+      const keyword1 = document.getElementById('keyword1').value;
+      const keyword2 = document.getElementById('keyword2').value;
+      const keyword3 = document.getElementById('keyword3').value;
+      const keyword4 = document.getElementById('keyword4').value;
+
+      const apiKey = 'up_b8HbZZNaNB2jwfdiljzVbkTyR6t5A';
+      const prompt = `이름: ${name}, 키워드: ${keyword1}, ${keyword2}, ${keyword3}, ${keyword4} 이 정보로 비슷한 키워드의 웃긴 별명을 만들어줘.`;
+
+      try {
+        const response = await axios.post('https://api.upstage.ai/v1/solar/chat/completions', {
+          model: 'solar-1-mini-chat',
+          messages: [
+            {
+              role: 'user',
+              content: prompt
+            }
+          ]
+        }, {
+          headers: {
+            'Authorization': `Bearer ${apiKey}`,
+            'Content-Type': 'application/json'
+          }
+        });
+
+        const nickname = response.data.choices[0].message.content;
+        document.getElementById('nicknameResult').textContent = `생성된 별명: ${nickname}`;
+      } catch (error) {
+        console.error('Error generating nickname:', error);
+        document.getElementById('nicknameResult').textContent = '별명 생성에 실패했습니다. 다시 시도해 주세요.';
+      }
+    });
+  </script>
+</body>
+</html>

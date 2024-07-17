@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Balance Game Generator</title>
+  <script type="module">
+    import OpenAI from "https://cdn.skypack.dev/openai";
+
+    const apiKey = 'up_b8HbZZNaNB2jwfdiljzVbkTyR6t5A';
+    const openai = new OpenAI({
+      apiKey: apiKey,
+      baseURL: 'https://api.upstage.ai/v1/solar',
+      dangerouslyAllowBrowser: true
+    });
+
+    async function generateBalanceGame(topic) {
+      const chatCompletion = await openai.chat.completions.create({
+        model: 'solar-1-mini-chat',
+        messages: [
+          {
+            role: 'user',
+            content: `Create a balance game with two difficult choices based on the topic: ${topic}`
+          }
+        ],
+        stream: false
+      });
+
+      return chatCompletion.choices[0].message.content || '';
+    }
+
+    document.addEventListener('DOMContentLoaded', () => {
+      const form = document.getElementById('balance-game-form');
+      const resultDiv = document.getElementById('result');
+
+      form.addEventListener('submit', async (event) => {
+        event.preventDefault();
+        const topic = document.getElementById('topic').value;
+        resultDiv.textContent = 'Generating...';
+        try {
+          const balanceGame = await generateBalanceGame(topic);
+          resultDiv.textContent = balanceGame;
+        } catch (error) {
+          resultDiv.textContent = 'Error generating balance game: ' + error.message;
+        }
+      });
+    });
+  </script>
+</head>
+<body>
+  <h1>Balance Game Generator</h1>
+  <form id="balance-game-form">
+    <label for="topic">Enter a topic:</label>
+    <input type="text" id="topic" name="topic" required>
+    <button type="submit">Generate Balance Game</button>
+  </form>
+  <div id="result"></div>
+</body>
+</html>
